@@ -1,82 +1,94 @@
 export interface Property {
   id: string;
   title: string;
+  slug: string;
   location: string;
   area: string;
-  type: 'apartment' | 'villa' | 'penthouse' | 'townhouse' | 'land';
+  community: string;
+  type: 'apartment' | 'villa' | 'penthouse' | 'townhouse' | 'land' | 'office';
   bedrooms: number;
   bathrooms: number;
   sqft: number;
+  pricePerSqft: number;
   image: string;
   images: string[];
+  floorPlanImage: string;
   description: string;
-  features: string[];
-  startingPrice: number;
-  currentBid: number;
-  totalBids: number;
-  watchers: number;
-  endsAt: Date;
-  seller: Seller;
-  bidHistory: Bid[];
-  isHot: boolean;
-  isNew: boolean;
-  hasReserve: boolean;
-  reserveMet: boolean;
+  highlights: string[];
+  amenities: Amenity[];
+  projectInfo: ProjectInfo;
+  unitDetails: UnitDetail[];
+  locationInfo: LocationInfo;
+  askingPrice: number;
+  totalOffers: number;
+  status: 'accepting_offers' | 'under_review' | 'sold';
+  listedAt: Date;
+  agent: Agent;
 }
 
-export interface Seller {
+export interface ProjectInfo {
+  developer: string;
+  projectName: string;
+  completionYear: number;
+  totalUnits: number;
+  buildingFloors: number;
+  unitFloor: number;
+  parkingSpaces: number;
+  serviceCharge: number; // per sqft per year
+  titleDeedReady: boolean;
+  freehold: boolean;
+}
+
+export interface UnitDetail {
+  label: string;
+  value: string;
+}
+
+export interface LocationInfo {
+  description: string;
+  nearbyPlaces: NearbyPlace[];
+  coordinates: { lat: number; lng: number };
+}
+
+export interface NearbyPlace {
   name: string;
-  avatar: string;
-  verified: boolean;
-  rating: number;
-  totalSales: number;
+  type: string;
+  distance: string;
 }
 
-export interface Bid {
-  id: string;
-  bidder: string;
-  avatar: string;
-  amount: number;
-  timestamp: Date;
-  rank: BidderRank;
-}
-
-export type BidderRank = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
-
-export interface UserProfile {
-  name: string;
-  avatar: string;
-  rank: BidderRank;
-  points: number;
-  pointsToNextRank: number;
-  totalBids: number;
-  auctionsWon: number;
-  badges: Badge[];
-  watchlist: string[];
-}
-
-export interface Badge {
-  id: string;
+export interface Amenity {
   name: string;
   icon: string;
-  description: string;
-  earned: boolean;
-  earnedAt?: Date;
 }
 
-export interface LeaderboardEntry {
-  rank: number;
+export interface Agent {
   name: string;
+  company: string;
   avatar: string;
-  bidderRank: BidderRank;
-  points: number;
-  auctionsWon: number;
+  phone: string;
+  verified: boolean;
+  rera: string; // RERA license number
+  totalListings: number;
 }
 
-export const RANK_CONFIG: Record<BidderRank, { label: string; color: string; bg: string; minPoints: number; icon: string }> = {
-  bronze: { label: 'Bronze', color: '#CD7F32', bg: '#FEF3C7', minPoints: 0, icon: '🥉' },
-  silver: { label: 'Silver', color: '#C0C0C0', bg: '#F1F5F9', minPoints: 500, icon: '🥈' },
-  gold: { label: 'Gold', color: '#FFD700', bg: '#FFFBEB', minPoints: 2000, icon: '🥇' },
-  platinum: { label: 'Platinum', color: '#E5E4E2', bg: '#F8FAFC', minPoints: 5000, icon: '💎' },
-  diamond: { label: 'Diamond', color: '#B9F2FF', bg: '#ECFEFF', minPoints: 15000, icon: '👑' },
-};
+export interface Offer {
+  id: string;
+  propertyId: string;
+  buyerName: string;
+  amount: number;
+  checkImageUrl: string;
+  submittedAt: Date;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
+export interface RegisteredUser {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  emiratesIdNumber: string;
+  emiratesIdFrontUrl: string;
+  emiratesIdBackUrl: string;
+  verified: boolean;
+  registeredAt: Date;
+}

@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Flame, Clock, TrendingUp, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Building2, TrendingUp } from 'lucide-react';
 import { MOCK_PROPERTIES } from '../data/properties';
 import { PropertyCard } from '../components/property/PropertyCard';
 import type { Property } from '../data/types';
 
-type SortOption = 'ending-soon' | 'most-bids' | 'price-low' | 'price-high' | 'hot';
-type FilterType = 'all' | 'apartment' | 'villa' | 'penthouse' | 'townhouse' | 'land';
+type SortOption = 'newest' | 'price-low' | 'price-high' | 'most-offers';
+type FilterType = 'all' | 'apartment' | 'villa' | 'penthouse' | 'townhouse';
 
 export function HomePage() {
-  const [sort, setSort] = useState<SortOption>('ending-soon');
+  const [sort, setSort] = useState<SortOption>('newest');
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
 
@@ -19,39 +19,28 @@ export function HomePage() {
   if (filter !== 'all') {
     properties = properties.filter((p) => p.type === filter);
   }
-
   if (search) {
     const q = search.toLowerCase();
     properties = properties.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.location.toLowerCase().includes(q) ||
-        p.area.toLowerCase().includes(q)
+        p.area.toLowerCase().includes(q) ||
+        p.community.toLowerCase().includes(q) ||
+        p.projectInfo.developer.toLowerCase().includes(q)
     );
   }
 
   // Sort
   const sorters: Record<SortOption, (a: Property, b: Property) => number> = {
-    'ending-soon': (a, b) => a.endsAt.getTime() - b.endsAt.getTime(),
-    'most-bids': (a, b) => b.totalBids - a.totalBids,
-    'price-low': (a, b) => a.currentBid - b.currentBid,
-    'price-high': (a, b) => b.currentBid - a.currentBid,
-    hot: (a, b) => (b.isHot ? 1 : 0) - (a.isHot ? 1 : 0) || b.watchers - a.watchers,
+    newest: (a, b) => b.listedAt.getTime() - a.listedAt.getTime(),
+    'price-low': (a, b) => a.askingPrice - b.askingPrice,
+    'price-high': (a, b) => b.askingPrice - a.askingPrice,
+    'most-offers': (a, b) => b.totalOffers - a.totalOffers,
   };
-
   properties.sort(sorters[sort]);
 
-  const endingSoon = MOCK_PROPERTIES.filter(
-    (p) => p.endsAt.getTime() - Date.now() < 3600000
-  ).length;
-
-  const sortOptions: { value: SortOption; label: string; icon: typeof Clock }[] = [
-    { value: 'ending-soon', label: 'Ending Soon', icon: Clock },
-    { value: 'hot', label: 'Hottest', icon: Flame },
-    { value: 'most-bids', label: 'Most Bids', icon: TrendingUp },
-    { value: 'price-low', label: 'Price: Low', icon: TrendingUp },
-    { value: 'price-high', label: 'Price: High', icon: TrendingUp },
-  ];
+  const totalOffers = MOCK_PROPERTIES.reduce((sum, p) => sum + p.totalOffers, 0);
 
   const filterOptions: { value: FilterType; label: string }[] = [
     { value: 'all', label: 'All' },
@@ -59,7 +48,13 @@ export function HomePage() {
     { value: 'villa', label: 'Villas' },
     { value: 'penthouse', label: 'Penthouses' },
     { value: 'townhouse', label: 'Townhouses' },
-    { value: 'land', label: 'Commercial' },
+  ];
+
+  const sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'newest', label: 'Newest' },
+    { value: 'price-low', label: 'Price: Low' },
+    { value: 'price-high', label: 'Price: High' },
+    { value: 'most-offers', label: 'Most Offers' },
   ];
 
   return (
@@ -71,40 +66,37 @@ export function HomePage() {
         className="mb-8"
       >
         <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">
-          Real Estate Auctions
+          Dubai Properties
         </h1>
         <p className="text-gray-500 text-lg">
-          Buy & sell properties in <span className="text-brand-600 font-bold">24 hours</span>.
-          Bid, win, own.
+          Explore units in detail. <span className="text-brand-600 font-bold">Make your offer.</span>
         </p>
       </motion.div>
 
-      {/* Stats bar */}
+      {/* Stats */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          <Building2 className="w-4 h-4 text-brand-500" />
           <span className="text-sm font-medium text-gray-700">
-            {MOCK_PROPERTIES.length} Live Auctions
+            {MOCK_PROPERTIES.length} Properties
           </span>
         </div>
-        {endingSoon > 0 && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-red-50 rounded-xl border border-red-100">
-            <Flame className="w-4 h-4 text-red-500" />
-            <span className="text-sm font-bold text-red-600">
-              {endingSoon} ending within 1 hour
-            </span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 px-4 py-2 bg-brand-50 rounded-xl border border-brand-100">
+          <TrendingUp className="w-4 h-4 text-brand-600" />
+          <span className="text-sm font-bold text-brand-700">
+            {totalOffers} offers submitted
+          </span>
+        </div>
       </div>
 
-      {/* Search + Filter bar */}
+      {/* Search + Filter */}
       <div className="flex flex-col md:flex-row gap-3 mb-6">
-        {/* Mobile search */}
-        <div className="md:hidden relative">
+        {/* Search */}
+        <div className="relative md:hidden">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search properties..."
+            placeholder="Search properties, areas, developers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -112,7 +104,7 @@ export function HomePage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           <SlidersHorizontal className="w-4 h-4 text-gray-400 shrink-0" />
           {filterOptions.map(({ value, label }) => (
             <button
@@ -130,7 +122,7 @@ export function HomePage() {
         </div>
 
         {/* Sort */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide md:ml-auto">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:ml-auto">
           {sortOptions.map(({ value, label }) => (
             <button
               key={value}
@@ -156,7 +148,7 @@ export function HomePage() {
         </div>
       ) : (
         <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">No auctions found</p>
+          <p className="text-gray-400 text-lg">No properties found</p>
           <p className="text-gray-300 text-sm mt-1">Try a different filter or search</p>
         </div>
       )}
