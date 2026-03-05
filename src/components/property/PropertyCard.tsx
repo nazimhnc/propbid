@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Bed, Bath, Maximize, MapPin, FileText, Building2, Eye, Flame, TrendingUp } from 'lucide-react';
 import type { Property } from '../../data/types';
+import { MOCK_BUYERS } from '../../data/properties';
+import { OfferAvatars } from '../visual/OfferAvatars';
 
 interface PropertyCardProps {
   property: Property;
@@ -136,6 +138,13 @@ export function PropertyCard({ property, index }: PropertyCardProps) {
                 />
               </div>
             </div>
+
+            {/* Buyer avatars */}
+            {MOCK_BUYERS[property.id] && MOCK_BUYERS[property.id].length > 0 && (
+              <div className="mb-3">
+                <OfferAvatars buyers={MOCK_BUYERS[property.id]} max={4} size="sm" />
+              </div>
+            )}
 
             {/* Price */}
             <div className="pt-3 border-t border-gray-100">

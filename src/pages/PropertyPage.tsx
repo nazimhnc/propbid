@@ -6,8 +6,9 @@ import {
   ChevronRight, Calendar, Car, Layers, CheckCircle,
   X, ChevronLeft,
 } from 'lucide-react';
-import { MOCK_PROPERTIES } from '../data/properties';
+import { MOCK_PROPERTIES, MOCK_BUYERS } from '../data/properties';
 import { PopularityMeter } from '../components/visual/PopularityMeter';
+import { OfferAvatars } from '../components/visual/OfferAvatars';
 import type { AuthState } from '../App';
 
 interface PropertyPageProps {
@@ -399,6 +400,13 @@ export function PropertyPage({ auth }: PropertyPageProps) {
                     viewers={14 + property.totalOffers * 5}
                   />
                 </div>
+
+                {/* Buyer avatars */}
+                {MOCK_BUYERS[property.id] && MOCK_BUYERS[property.id].length > 0 && (
+                  <div className="mb-5 p-3 bg-gray-50 rounded-xl">
+                    <OfferAvatars buyers={MOCK_BUYERS[property.id]} max={6} size="md" showDetails />
+                  </div>
+                )}
 
                 <motion.button
                   onClick={handleMakeOffer}
