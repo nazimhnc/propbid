@@ -66,12 +66,21 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8 pb-24 md:pb-8">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+    <div className="max-w-xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
+      {/* Decorative background */}
+      <div className="absolute -top-20 -right-20 w-72 h-72 bg-brand-200/20 rounded-full blur-3xl animate-blob pointer-events-none" aria-hidden />
+      <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-violet-200/20 rounded-full blur-3xl animate-blob pointer-events-none" style={{ animationDelay: '3s' }} aria-hidden />
+
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-brand-100 rounded-xl flex items-center justify-center">
-            <Shield className="w-5 h-5 text-brand-600" />
-          </div>
+          <motion.div
+            initial={{ scale: 0, rotate: -90 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', bounce: 0.5 }}
+            className="w-12 h-12 bg-gradient-to-br from-brand-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-brand-200"
+          >
+            <Shield className="w-6 h-6 text-white" />
+          </motion.div>
           <div>
             <h1 className="text-2xl font-black text-gray-900">Register to Make Offers</h1>
             <p className="text-sm text-gray-500">Verify your identity to start submitting offers</p>
@@ -79,7 +88,7 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
         </div>
       </motion.div>
 
-      <div className="mt-6 bg-white rounded-2xl p-6 border border-gray-100 space-y-5">
+      <div className="relative z-10 mt-6 bg-white/90 backdrop-blur rounded-2xl p-6 border border-gray-100 shadow-sm space-y-5">
         {/* Why register */}
         <div className="bg-blue-50 rounded-xl p-4">
           <p className="text-sm font-bold text-blue-800 mb-1">Why do we need your Emirates ID?</p>
@@ -238,7 +247,7 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
           className={`w-full py-4 rounded-xl text-base font-bold transition ${
             submitting
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-200'
+              : 'bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-700 hover:to-violet-700 text-white shadow-lg shadow-brand-200'
           }`}
         >
           {submitting ? 'Verifying...' : 'Register & Verify Identity'}

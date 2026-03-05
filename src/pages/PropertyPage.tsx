@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, MapPin, Bed, Bath, Maximize, Building2, Shield, Phone,
-  ChevronRight, Calendar, FileText, Car, Layers, CheckCircle,
+  ChevronRight, Calendar, Car, Layers, CheckCircle,
   X, ChevronLeft,
 } from 'lucide-react';
 import { MOCK_PROPERTIES } from '../data/properties';
+import { PopularityMeter } from '../components/visual/PopularityMeter';
 import type { AuthState } from '../App';
 
 interface PropertyPageProps {
@@ -382,26 +383,31 @@ export function PropertyPage({ auth }: PropertyPageProps) {
           <div className="hidden lg:block">
             <div className="sticky top-20 space-y-4">
               {/* Price card */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100">
+              <div className="bg-white/90 backdrop-blur rounded-2xl p-6 border border-gray-100 shadow-sm">
                 <p className="text-xs text-gray-400 uppercase font-medium mb-1">Asking Price</p>
-                <p className="text-3xl font-black text-gray-900 mb-1">{formatPrice(property.askingPrice)}</p>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1">
+                  {formatPrice(property.askingPrice)}
+                </p>
+                <p className="text-sm text-gray-500 mb-5">
                   AED {property.pricePerSqft.toLocaleString()}/sqft
                 </p>
 
-                <div className="flex items-center gap-2 mb-4 p-3 bg-blue-50 rounded-xl">
-                  <FileText className="w-4 h-4 text-blue-600 shrink-0" />
-                  <p className="text-xs text-blue-700">
-                    <span className="font-bold">{property.totalOffers} offers</span> already submitted
-                  </p>
+                {/* Popularity meter */}
+                <div className="mb-5 p-3 bg-gray-50 rounded-xl">
+                  <PopularityMeter
+                    offers={property.totalOffers}
+                    viewers={14 + property.totalOffers * 5}
+                  />
                 </div>
 
-                <button
+                <motion.button
                   onClick={handleMakeOffer}
-                  className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-base font-bold transition shadow-lg shadow-brand-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 bg-gradient-to-r from-brand-600 to-violet-600 hover:from-brand-700 hover:to-violet-700 text-white rounded-xl text-base font-bold transition shadow-lg shadow-brand-200 animate-pulse-glow"
                 >
                   {auth.isRegistered ? 'Submit Your Offer' : 'Register & Make Offer'}
-                </button>
+                </motion.button>
 
                 {!auth.isRegistered && (
                   <p className="text-[10px] text-gray-400 text-center mt-2">
@@ -447,18 +453,19 @@ export function PropertyPage({ auth }: PropertyPageProps) {
       </div>
 
       {/* Mobile sticky bottom CTA */}
-      <div className="lg:hidden fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40">
+      <div className="lg:hidden fixed bottom-14 left-0 right-0 bg-white/90 backdrop-blur border-t border-gray-200 p-4 z-40">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-[10px] text-gray-400">Asking Price</p>
-            <p className="text-lg font-black text-gray-900">{formatPrice(property.askingPrice)}</p>
+            <p className="text-lg font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{formatPrice(property.askingPrice)}</p>
           </div>
-          <button
+          <motion.button
             onClick={handleMakeOffer}
-            className="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold transition shadow-lg shadow-brand-200"
+            whileTap={{ scale: 0.95 }}
+            className="px-8 py-3 bg-gradient-to-r from-brand-600 to-violet-600 text-white rounded-xl font-bold transition shadow-lg shadow-brand-200"
           >
             {auth.isRegistered ? 'Make Offer' : 'Register & Offer'}
-          </button>
+          </motion.button>
         </div>
       </div>
     </>
